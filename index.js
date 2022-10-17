@@ -85,7 +85,11 @@ client.on("message", async (channel, tags, message, self) => {
       chiste,
       comediante: tags.username,
     });
-    await db.write();
+    try {
+      await db.write();
+    } catch (error) {
+      console.error(error);
+    }
     client.say(channel, `tu chiste fue guardado, @${tags.username}`);
   }
 });
