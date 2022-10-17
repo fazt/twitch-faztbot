@@ -12,9 +12,13 @@ const file = join(__dirname, "db.json");
 const adapter = new JSONFile(file);
 const db = new Low(adapter);
 
-await db.read()
-db.data ||= { chistes: [] }; // Node >= 15.x
-await db.write();
+try {
+  await db.read();
+  db.data ||= { chistes: [] }; // Node >= 15.x
+  await db.write();
+} catch (error) {
+  console.error(error);
+}
 
 const client = new tmi.Client({
   options: { debug: true },
@@ -67,7 +71,10 @@ client.on("message", async (channel, tags, message, self) => {
 
     if (params.length === 1) {
       const random = Math.floor(Math.random() * db.data.chistes.length);
-      return client.say(channel, `@${tags.username}: ${db.data.chistes[random].chiste}`);
+      return client.say(
+        channel,
+        `@${tags.username}: ${db.data.chistes[random].chiste}`
+      );
     }
 
     const words = params.slice(1);
